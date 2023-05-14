@@ -297,7 +297,7 @@ const updateRole = async () => {
 // function to report salary analysis
 const salaryData = () => {
   connection.query(
-    "CREATE TEMPORARY TABLE company SELECT employees.id AS ID,employees.first_name AS First_Name, employees.last_name AS LAST_NAME, roles.title AS DESIGNATION, departments.dept_name AS department, roles.salary AS Salary_in_$, Concat(manager.first_name,' ', manager.last_name) AS Manager FROM employees INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON roles.department_id = departments.id LEFT JOIN employees manager ON employees.manager_id = manager.id;SELECT department , SUM( Salary_in_$), AVG(Salary_in_$), MIN(Salary_in_$), MAX(Salary_in_$) FROM company GROUP BY department;",
+    "CREATE TEMPORARY TABLE company SELECT employees.id AS ID,employees.first_name AS First_Name, employees.last_name AS LAST_NAME, roles.title AS DESIGNATION, departments.dept_name AS department, roles.salary AS Salary_in_$, Concat(manager.first_name,' ', manager.last_name) AS Manager FROM employees INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON roles.department_id = departments.id LEFT JOIN employees manager ON employees.manager_id = manager.id;SELECT department , SUM( Salary_in_$), AVG(Salary_in_$), MIN(Salary_in_$), MAX(Salary_in_$) FROM company GROUP BY department;DROP TEMPORARY TABLE IF EXISTS company",
     (err, results) => {
       if (err) {
         throw err;
