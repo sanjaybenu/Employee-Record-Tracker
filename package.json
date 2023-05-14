@@ -1,0 +1,23 @@
+{
+  "name": "employee-record-tracker",
+  "version": "1.0.0",
+  "description": "Tracking HR Data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanjaybenu/Employee-Record-Tracker.git"
+  },
+  "author": "Sanjay Chopra",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanjaybenu/Employee-Record-Tracker/issues"
+  },
+  "homepage": "https://github.com/sanjaybenu/Employee-Record-Tracker#readme",
+  "dependencies": {
+    "inquirer": "^8.2.4",
+    "mysql2": "^3.3.1"
+  }
+}
