@@ -5,10 +5,10 @@ const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database:'company_hr_db'
+    database:'company_hr_db',
+    multipleStatements: true
 }, console.log("Connected to Company's HR Database")
 )
-
 
 connection.connect((err)=>{
   if (err) throw err;
@@ -80,7 +80,7 @@ connection.query('SELECT id AS dept_id, dept_name AS Department FROM departments
         type:"list",
         name:"moreOptions",
         message: "What do you want to do?",
-        choices:["add department","add role","add Employee","update Role","update Manager","quit" ]
+        choices:["add department","add role","add Employee","update Role","update Manager","salary Analysis","quit" ]
      }]
      ).then((data)=>{
         switch (`${data.moreOptions}`){
@@ -99,6 +99,9 @@ connection.query('SELECT id AS dept_id, dept_name AS Department FROM departments
         case 'update Manager':
         updateManager()
         break;
+        case 'salary Analysis':
+        salaryData()
+        break
         case 'quit':
         endCon()
         break;
@@ -170,9 +173,7 @@ type: 'input',
 name: 'lastN_m',
 message: 'What is the Last name of the manager?',
 }]).then((data)=>{
-        connection.query(`CREATE TEMPORARY TABLE temp_manager_ids SELECT id FROM employees WHERE first_name = '${data.firstN_m}' AND last_name = '${data.lastN_m}'`)
-        connection.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('${data.firstN}', '${data.lastN}', (SELECT id FROM roles WHERE title = '${data.role}' LIMIT 1), (SELECT id FROM temp_manager_ids LIMIT 1))`)
-        connection.query(`DROP TEMPORARY TABLE IF EXISTS temp_manager_ids;`)
+    connection.query(`CREATE TEMPORARY TABLE temp_manager_ids SELECT id FROM employees WHERE first_name = '${data.firstN_m}' AND last_name = '${data.lastN_m}';INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ('${data.firstN}', '${data.lastN}', (SELECT id FROM roles WHERE title = '${data.role}' LIMIT 1), (SELECT id FROM temp_manager_ids LIMIT 1));DROP TEMPORARY TABLE IF EXISTS temp_manager_ids;`)
     })
     start()
 }
@@ -200,9 +201,7 @@ type: 'input',
 name: 'lastN_m',
 message: 'What is the Last name of the manager?',
 }]).then((data)=>{
-        connection.query(`CREATE TEMPORARY TABLE temp_manager_ids SELECT id FROM employees WHERE first_name = '${data.firstN_m}' AND last_name = '${data.lastN_m}'`)
-        connection.query(`UPDATE employees SET manager_id = (SELECT id from temp_manager_ids LIMIT 1) WHERE first_name ='${data.firstN}' AND last_name = '${data.lastN}'`)
-        connection.query(`DROP TEMPORARY TABLE IF EXISTS temp_manager_ids;`)
+    connection.query(`CREATE TEMPORARY TABLE temp_manager_ids SELECT id FROM employees WHERE first_name = '${data.firstN_m}' AND last_name = '${data.lastN_m}';UPDATE employees SET manager_id = (SELECT id from temp_manager_ids LIMIT 1) WHERE first_name ='${data.firstN}' AND last_name = '${data.lastN}';DROP TEMPORARY TABLE IF EXISTS temp_manager_ids;`)
     })
     start()
 }
@@ -235,4 +234,15 @@ message: 'New Department?',
     })
     start()
 }
+
+const salaryData =()=>{
+   
+    connection.query("CREATE TEMPORARY TABLE company SELECT employees.id AS ID,employees.first_name AS First_Name, employees.last_name AS LAST_NAME, roles.title AS DESIGNATION, departments.dept_name AS department, roles.salary AS Salary_in_$, Concat(manager.first_name,' ', manager.last_name) AS Manager FROM employees INNER JOIN roles ON employees.role_id = roles.id INNER JOIN departments ON roles.department_id = departments.id LEFT JOIN employees manager ON employees.manager_id = manager.id;SELECT department , SUM( Salary_in_$), AVG(Salary_in_$), MIN(Salary_in_$), MAX(Salary_in_$) FROM company GROUP BY department;", (err, results)=>{
+       if (err) {
+           throw err
+       }
+       console.table(results[1]);
+       start()
+   })   
+   };
 
